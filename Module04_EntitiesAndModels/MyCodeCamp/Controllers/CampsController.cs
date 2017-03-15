@@ -7,10 +7,11 @@ using MyCodeCamp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace MyCodeCamp.Controllers {     
     [Route("api/[controller]")]
-	public class CampsController : Controller {
+	public class CampsController : BaseController {
         private readonly ICampRepository _campRepository;
         private readonly ILogger<CampsController> _logger;
         private readonly IMapper _mapper;
@@ -20,13 +21,14 @@ namespace MyCodeCamp.Controllers {
             _campRepository = campRepository;
             _logger = logger;
             _mapper = mapper;
-        }
+        }        
 
         [HttpGet]
         public IActionResult Get() {
             try {
                 var camps = _campRepository.GetAllCamps();
-                return Ok(_mapper.Map<IEnumerable<CampViewModel>>(camps, opt => opt.Items["UrlHelper"] = Url));
+                // return Ok(_mapper.Map<IEnumerable<CampViewModel>>(camps, opt => opt.Items["UrlHelper"] = Url)); /* => this method was cumbersome to use, now implemented by custom resolver */
+                return Ok(_mapper.Map<IEnumerable<CampViewModel>>(camps));
             } catch (Exception ex) {
                 _logger.LogCritical($"Threw exception while getting camps: {ex}");
             }
@@ -43,7 +45,8 @@ namespace MyCodeCamp.Controllers {
                 if (camp == null) {
                     return NotFound($"Camp with id '{id}' was not found.");
                 }
-                return Ok(_mapper.Map<CampViewModel>(camp, opt => opt.Items["UrlHelper"] = Url));
+                // return Ok(_mapper.Map<CampViewModel>(camp, opt => opt.Items["UrlHelper"] = Url)); /* => this method was cumbersome to use, now implemented by custom resolver */
+                return Ok(_mapper.Map<CampViewModel>(camp));
             } catch (Exception ex) {
                 _logger.LogCritical($"Threw exception while getting camp with id='{id}' and includeSpeakers='{includeSpeakers}': {ex}");
             }

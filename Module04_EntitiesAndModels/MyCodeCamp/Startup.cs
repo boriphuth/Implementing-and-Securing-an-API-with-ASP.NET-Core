@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -27,7 +28,7 @@ namespace MyCodeCamp
         public void ConfigureServices(IServiceCollection services)
         {
             // Add config as singleton
-            services.AddSingleton(_configuration);
+            services.AddSingleton(_configuration);            
 
             // EF Contexts + Repos
             services.AddDbContext<CampContext>(ServiceLifetime.Scoped); /* init db context for the repos */
@@ -35,6 +36,7 @@ namespace MyCodeCamp
             services.AddTransient<CampDbInitializer>(); /* seed data if necessary */
 
             // Automapper
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddAutoMapper();
 
             // Add framework services.
