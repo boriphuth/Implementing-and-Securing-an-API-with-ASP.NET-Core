@@ -1,13 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MyCodeCamp.Data;
+using MyCodeCamp.Data.Entities;
+using System;
+using System.Threading.Tasks;
 
 namespace MyCodeCamp.Controllers {     
     [Route("api/[controller]")]
 	public class CampsController : Controller {
         private readonly ICampRepository _campRepository;
+        private readonly ILogger<CampsController> _logger;
 
-        public CampsController(ICampRepository campRepository) {
+        public CampsController(ICampRepository campRepository, ILogger<CampsController> logger) {
             _campRepository = campRepository;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -15,12 +21,14 @@ namespace MyCodeCamp.Controllers {
             try {
                 var camps = _campRepository.GetAllCamps();
                 return Ok(camps);
-            } catch { }
+            } catch (Exception ex) {
+                _logger.LogCritical($"Threw exception while getting camps: {ex}");
+            }
 
             return BadRequest();
         }
         
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetCamp")]
         public IActionResult Get(int id, bool includeSpeakers = false) {
             try {
                 var camp = includeSpeakers
@@ -30,7 +38,27 @@ namespace MyCodeCamp.Controllers {
                     return NotFound($"Camp with id '{id}' was not found.");
                 }
                 return Ok(camp);
-            } catch { }
+            } catch (Exception ex) {
+                _logger.LogCritical($"Threw exception while getting camp with id='{id}' and includeSpeakers='{includeSpeakers}': {ex}");
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] Camp model) {
+            try {
+                _logger.LogInformation("Create a new code camp");
+                _campRepository.Add(model);                
+                if(await _campRepository.SaveAllAsync()) {
+                    var uri = Url.Link("GetCamp", new { id = model.Id });
+                    return Created(uri, model);
+                } else {
+                    _logger.LogWarning("Could not save camp to the database");
+                }
+            } catch (Exception ex) {
+                _logger.LogCritical($"Threw exception while saving camp: {ex}");
+            }
 
             return BadRequest();
         }
