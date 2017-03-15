@@ -1,8 +1,15 @@
 # Implementing and Securing an API with ASP.NET Core
 Code along with "[Implementing and Securing an API with ASP.NET Core](https://app.pluralsight.com/library/courses/aspdotnetcore-implementing-securing-api/table-of-contents)" by Shawn Wildermuth: https://app.pluralsight.com/library/courses/aspdotnetcore-implementing-securing-api/table-of-contents.
 
-## Description
+# Description
 Building an API with ASP.NET Core is an obvious choice for solutions that require cross-platform hosting, micro-service architecture, or just broad scale. This course will show you how to do just that.
+
+The course will include
+- Building the whole API
+  - not the database layer
+  - not a website to support it
+  - not buidling the client side code, also no tests
+
 
 ## Http
 ### Verbs
@@ -37,4 +44,4 @@ Resource Based Architecture, resource are representations or real world entities
     - HTTP Verbs
     - Stateless Server
     - Content Negotiation
-    - But **not** link relations (e.g. hypermedia), and no verbs included in API endpoints...
+    - But **not** link relations (e.g. hypermedia), and no verbs included in API endpoints... (only when it's really needed)
