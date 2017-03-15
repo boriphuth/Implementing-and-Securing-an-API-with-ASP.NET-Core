@@ -31,7 +31,8 @@ namespace MyCodeCamp
             // Add config as singleton
             services.AddSingleton(_configuration);
 
-            // EF Repos
+            // EF Contexts + Repos
+            services.AddDbContext<CampContext>(ServiceLifetime.Scoped);
             services.AddScoped<ICampRepository, CampRepository>(); /* scope of a request +/- */
 
             // Add framework services.
