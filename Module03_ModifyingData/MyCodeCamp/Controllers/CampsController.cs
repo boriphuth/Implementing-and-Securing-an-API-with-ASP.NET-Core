@@ -25,7 +25,7 @@ namespace MyCodeCamp.Controllers {
                 _logger.LogCritical($"Threw exception while getting camps: {ex}");
             }
 
-            return BadRequest();
+            return BadRequest("Could not get camps");
         }
         
         [HttpGet("{id}", Name = "GetCamp")]
@@ -42,7 +42,7 @@ namespace MyCodeCamp.Controllers {
                 _logger.LogCritical($"Threw exception while getting camp with id='{id}' and includeSpeakers='{includeSpeakers}': {ex}");
             }
 
-            return BadRequest();
+            return BadRequest("Could not get camp");
         }
 
         [HttpPost]
@@ -60,7 +60,7 @@ namespace MyCodeCamp.Controllers {
                 _logger.LogCritical($"Threw exception while saving camp: {ex}");
             }
 
-            return BadRequest();
+            return BadRequest("Could not save camp");
         }
 
         [HttpPut("{id}")]
@@ -89,7 +89,30 @@ namespace MyCodeCamp.Controllers {
                 _logger.LogCritical($"Threw exception while saving camp: {ex}");
             }
 
-            return BadRequest();
+            return BadRequest("Could not save camp");
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id) {
+            try {
+                _logger.LogInformation($"Delete code camp with id='{id}'");
+
+                var camp = _campRepository.GetCamp(id);
+                if (camp == null) {
+                    return NotFound($"Could not find a camp with id='{id}'");
+                }
+
+                _campRepository.Delete(camp);
+                if (await _campRepository.SaveAllAsync()) {
+                    return Ok();
+                } else {
+                    _logger.LogWarning("Could not delete camp to the database");
+                }
+            } catch (Exception ex) {
+                _logger.LogCritical($"Threw exception while deleting camp: {ex}");
+            }
+
+            return BadRequest("Could not delete camp");
         }
     }
 }
