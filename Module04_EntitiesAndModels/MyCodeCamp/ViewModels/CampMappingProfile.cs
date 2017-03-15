@@ -22,7 +22,9 @@ namespace MyCodeCamp.ViewModels
                     opt => opt.MapFrom(cm => cm.EventDate.AddDays(cm.Length - 1)));*/
                 .ForMember(cvm => cvm.EndDate, 
                     opt => opt.ResolveUsing(cm => cm.EventDate.AddDays(cm.Length - 1)))
+
                 .ReverseMap()
+
                 .ForMember(cm => cm.EventDate, 
                     opt => opt.MapFrom(cvm => cvm.StartDate))
                 .ForMember(cm => cm.Length,

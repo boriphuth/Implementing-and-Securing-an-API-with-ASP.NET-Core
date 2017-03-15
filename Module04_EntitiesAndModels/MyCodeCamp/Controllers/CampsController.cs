@@ -83,26 +83,18 @@ namespace MyCodeCamp.Controllers {
         [HttpPatch("{moniker}")]
         public async Task<IActionResult> Put(string moniker, [FromBody] CampViewModel viewModel) {
             try {
+                if (!ModelState.IsValid) {
+                    return BadRequest(ModelState);
+                }
+
                 _logger.LogInformation($"Put code camp with moniker='{moniker}'");
 
                 var camp = _campRepository.GetCampByMoniker(moniker);
                 if(camp == null) {
                     return NotFound($"Could not find a camp with moniker='{moniker}'");
-                }                
+                }
 
-                /*camp.Name = viewModel.Name ?? camp.Name;
-                camp.Description = viewModel.Description ?? camp.Description;
-                camp.Location = new Location {
-                    Address1 = viewModel.LocationAddress1,
-                    Address2 = viewModel.LocationAddress2,
-                    Address3 = viewModel.LocationAddress3,
-                    CityTown = viewModel.LocationCityTown,
-                    Country = viewModel.LocationCountry,
-                    PostalCode = viewModel.LocationPostalCode,
-                    StateProvince = viewModel.LocationStateProvince
-                };
-                camp.Length = viewModel.Length > 0 ? viewModel.Length : camp.Length;
-                camp.EventDate = viewModel.EventDate != DateTime.MinValue ? viewModel.EventDate : camp.EventDate;*/
+                _mapper.Map(viewModel, camp);
 
                 if (await _campRepository.SaveAllAsync()) {                    
                     return Ok(_mapper.Map<CampViewModel>(camp));
