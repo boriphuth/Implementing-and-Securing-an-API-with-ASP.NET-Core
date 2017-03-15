@@ -1,4 +1,4 @@
-﻿# URI Design
+﻿#URI Design
 - "Nouns are good, Verbs are bad"
   - E.g. 'getCustomers' vs 'saveCustomers'
     - doubles the work, one should use the **words** of the HTTP stakc and be resource based
