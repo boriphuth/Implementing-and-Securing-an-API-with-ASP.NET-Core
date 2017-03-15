@@ -8,7 +8,8 @@ namespace MyCodeCamp.ViewModels
         public int Id { get; set; }
         public string Moniker { get; set; }
         public string Name { get; set; }
-        public DateTime EventDate { get; set; } = DateTime.MinValue;
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public int Length { get; set; }
         public string Description { get; set; }
         #endregion
