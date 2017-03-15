@@ -55,13 +55,20 @@ namespace MyCodeCamp.Controllers {
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Camp model) {
+        public async Task<IActionResult> Post([FromBody] CampViewModel viewModel) {
             try {
+
+                if (!ModelState.IsValid) {
+                    return BadRequest(ModelState);
+                }
+
                 _logger.LogInformation("Create a new code camp");
-                _campRepository.Add(model);                
+
+                var camp = _mapper.Map<Camp>(viewModel);
+                _campRepository.Add(camp);
                 if(await _campRepository.SaveAllAsync()) {
-                    var uri = Url.Link("GetCamp", new { id = model.Id });
-                    return Created(uri, model);
+                    var uri = Url.Link("GetCamp", new { moniker = camp.Moniker });
+                    return Created(uri, _mapper.Map<CampViewModel>(camp));
                 } else {
                     _logger.LogWarning("Could not save camp to the database");
                 }
@@ -72,25 +79,33 @@ namespace MyCodeCamp.Controllers {
             return BadRequest("Could not save camp");
         }
 
-        [HttpPut("{id}")]
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Camp model) {
+        [HttpPut("{moniker}")]
+        [HttpPatch("{moniker}")]
+        public async Task<IActionResult> Put(string moniker, [FromBody] CampViewModel viewModel) {
             try {
-                _logger.LogInformation($"Put code camp with id='{id}'");
+                _logger.LogInformation($"Put code camp with moniker='{moniker}'");
 
-                var camp = _campRepository.GetCamp(id);
+                var camp = _campRepository.GetCampByMoniker(moniker);
                 if(camp == null) {
-                    return NotFound($"Could not find a camp with id='{id}'");
-                }
+                    return NotFound($"Could not find a camp with moniker='{moniker}'");
+                }                
 
-                camp.Name = model.Name ?? camp.Name;
-                camp.Description = model.Description ?? camp.Description;
-                camp.Location = model.Location ?? camp.Location;
-                camp.Length = model.Length > 0 ? model.Length : camp.Length;
-                camp.EventDate = model.EventDate != DateTime.MinValue ? model.EventDate : camp.EventDate;
+                /*camp.Name = viewModel.Name ?? camp.Name;
+                camp.Description = viewModel.Description ?? camp.Description;
+                camp.Location = new Location {
+                    Address1 = viewModel.LocationAddress1,
+                    Address2 = viewModel.LocationAddress2,
+                    Address3 = viewModel.LocationAddress3,
+                    CityTown = viewModel.LocationCityTown,
+                    Country = viewModel.LocationCountry,
+                    PostalCode = viewModel.LocationPostalCode,
+                    StateProvince = viewModel.LocationStateProvince
+                };
+                camp.Length = viewModel.Length > 0 ? viewModel.Length : camp.Length;
+                camp.EventDate = viewModel.EventDate != DateTime.MinValue ? viewModel.EventDate : camp.EventDate;*/
 
                 if (await _campRepository.SaveAllAsync()) {                    
-                    return Ok(camp);
+                    return Ok(_mapper.Map<CampViewModel>(camp));
                 } else {
                     _logger.LogWarning("Could not save camp to the database");
                 }
@@ -101,14 +116,14 @@ namespace MyCodeCamp.Controllers {
             return BadRequest("Could not save camp");
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id) {
+        [HttpDelete("{moniker}")]
+        public async Task<IActionResult> Delete(string moniker) {
             try {
-                _logger.LogInformation($"Delete code camp with id='{id}'");
+                _logger.LogInformation($"Delete code camp with moniker='{moniker}'");
 
-                var camp = _campRepository.GetCamp(id);
+                var camp = _campRepository.GetCampByMoniker(moniker);
                 if (camp == null) {
-                    return NotFound($"Could not find a camp with id='{id}'");
+                    return NotFound($"Could not find a camp with moniker='{moniker}'");
                 }
 
                 _campRepository.Delete(camp);

@@ -21,7 +21,23 @@ namespace MyCodeCamp.ViewModels
                 /*.ForMember(cvm => cvm.EndDate, 
                     opt => opt.MapFrom(cm => cm.EventDate.AddDays(cm.Length - 1)));*/
                 .ForMember(cvm => cvm.EndDate, 
-                    opt => opt.ResolveUsing(cm => cm.EventDate.AddDays(cm.Length - 1)));
+                    opt => opt.ResolveUsing(cm => cm.EventDate.AddDays(cm.Length - 1)))
+                .ReverseMap()
+                .ForMember(cm => cm.EventDate, 
+                    opt => opt.MapFrom(cvm => cvm.StartDate))
+                .ForMember(cm => cm.Length,
+                    opt => opt.ResolveUsing(cvm => (cvm.EndDate - cvm.StartDate).Days + 1))
+                .ForMember(cm => cm.Location,
+                    opt => opt.ResolveUsing(cvm => new Location {
+                        Address1 = cvm.LocationAddress1,
+                        Address2 = cvm.LocationAddress2,
+                        Address3 = cvm.LocationAddress3,
+                        CityTown = cvm.LocationCityTown,
+                        Country = cvm.LocationCountry,
+                        PostalCode = cvm.LocationPostalCode,
+                        StateProvince = cvm.LocationStateProvince
+                    })
+                );
         }
     }
 }
