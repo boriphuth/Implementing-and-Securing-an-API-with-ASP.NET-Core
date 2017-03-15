@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MyCodeCamp.Data;
 
 namespace MyCodeCamp
 {
@@ -30,6 +31,9 @@ namespace MyCodeCamp
             // Add config as singleton
             services.AddSingleton(_configuration);
 
+            // EF Repos
+            services.AddScoped<ICampRepository, CampRepository>(); /* scope of a request +/- */
+
             // Add framework services.
             services.AddMvc();
         }
@@ -40,12 +44,7 @@ namespace MyCodeCamp
             loggerFactory.AddConsole(_configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseMvc(config => {
-                /*config.MapRoute(
-                    name: "default", 
-                    template: "api/{controller}/{action}"
-                );*/
-            });
+            app.UseMvc();
         }
     }
 }

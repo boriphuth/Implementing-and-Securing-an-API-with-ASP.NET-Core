@@ -19,5 +19,8 @@
   <ItemGroup>
     <None Include="Controllers\CampsController.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MyCodeCamp.Data\MyCodeCamp.Data.csproj" />
+  </ItemGroup>
 
 </Project>
