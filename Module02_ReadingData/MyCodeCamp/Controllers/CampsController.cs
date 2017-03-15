@@ -19,8 +19,7 @@ namespace MyCodeCamp.Controllers {
 
             return BadRequest();
         }
-
-        [HttpGet("")]
+        
         [HttpGet("{id}")]
         public IActionResult Get(int id, bool includeSpeakers = false) {
             try {
