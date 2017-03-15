@@ -1,0 +1,37 @@
+﻿# URI Design
+- "Nouns are good, Verbs are bad"
+  - E.g. 'getCustomers' vs 'saveCustomers'
+    - doubles the work, one should use the **words** of the HTTP stakc and be resource based
+  - Prefer plurals, e.g. 'api/Customers' and 'api/Games'
+ - Use identifier to locate individual items in URI
+   - does not have to be internal key
+     - e.g:
+	   - api/customers/123
+	   - api/games/halo-3 (-> isn't a primary/internal key)
+	   - api/invoices/2003-01-24 (here it's the date)
+- **Status Codes** (not a complete list, but most common)
+  - **200**
+    - 200: OK
+	- 201: Created
+	- 202: Accepted
+  - **300**
+    - 302: Found
+	- 304: Not Modified
+	- 307: Temp Redirect
+	- 308: Perm Redirect
+  - **400**
+    - 400: Bad Request
+	- 401: Not Authorized
+	- 403: Forbidden
+	- 404: Not Found
+	- 405: Method Not Allowed
+	- 409: COnflict
+  - **500**: Internal / Server Error(s)
+  - At minimum use codes 200 (it worked), 400 (you did sth wrong) and 500 (we did sth wrong)
+- **Formatting** results
+  - Content Types, header *accept*
+    - application/json -> json data
+	- text/xml -> xml data
+	- application/javascript -> JSONP (requires callback param e.g. /customers/?callback=foo)
+	- application/xml+rss -> RSS
+	- application/xml+atom -> ATOM
