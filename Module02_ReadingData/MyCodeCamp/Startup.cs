@@ -32,20 +32,26 @@ namespace MyCodeCamp
             services.AddSingleton(_configuration);
 
             // EF Contexts + Repos
-            services.AddDbContext<CampContext>(ServiceLifetime.Scoped);
+            services.AddDbContext<CampContext>(ServiceLifetime.Scoped); /* init db context for the repos */
             services.AddScoped<ICampRepository, CampRepository>(); /* scope of a request +/- */
+            services.AddTransient<CampDbInitializer>(); /* seed data if necessary */
 
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc();            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(
+            IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+            CampDbInitializer dbSeeder
+        )
         {
             loggerFactory.AddConsole(_configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             app.UseMvc();
+
+            dbSeeder.Seed().Wait();
         }
     }
 }
