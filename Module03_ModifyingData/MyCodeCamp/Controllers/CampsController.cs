@@ -62,5 +62,34 @@ namespace MyCodeCamp.Controllers {
 
             return BadRequest();
         }
+
+        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] Camp model) {
+            try {
+                _logger.LogInformation($"Put code camp with id='{id}'");
+
+                var camp = _campRepository.GetCamp(id);
+                if(camp == null) {
+                    return NotFound($"Could not find a camp with id='{id}'");
+                }
+
+                camp.Name = model.Name ?? camp.Name;
+                camp.Description = model.Description ?? camp.Description;
+                camp.Location = model.Location ?? camp.Location;
+                camp.Length = model.Length > 0 ? model.Length : camp.Length;
+                camp.EventDate = model.EventDate != DateTime.MinValue ? model.EventDate : camp.EventDate;
+
+                if (await _campRepository.SaveAllAsync()) {                    
+                    return Ok(camp);
+                } else {
+                    _logger.LogWarning("Could not save camp to the database");
+                }
+            } catch (Exception ex) {
+                _logger.LogCritical($"Threw exception while saving camp: {ex}");
+            }
+
+            return BadRequest();
+        }
     }
 }
