@@ -36,19 +36,19 @@ namespace MyCodeCamp.Controllers {
             return BadRequest("Could not get camps");
         }
         
-        [HttpGet("{id}", Name = "GetCamp")]
-        public IActionResult Get(int id, bool includeSpeakers = false) {
+        [HttpGet("{moniker}", Name = "GetCamp")]
+        public IActionResult Get(string moniker, bool includeSpeakers = false) {
             try {
                 var camp = includeSpeakers
-                    ? _campRepository.GetCampWithSpeakers(id)
-                    : _campRepository.GetCamp(id);
+                    ? _campRepository.GetCampByMonikerWithSpeakers(moniker)
+                    : _campRepository.GetCampByMoniker(moniker);
                 if (camp == null) {
-                    return NotFound($"Camp with id '{id}' was not found.");
+                    return NotFound($"Camp with moniker '{moniker}' was not found.");
                 }
                 // return Ok(_mapper.Map<CampViewModel>(camp, opt => opt.Items["UrlHelper"] = Url)); /* => this method was cumbersome to use, now implemented by custom resolver */
                 return Ok(_mapper.Map<CampViewModel>(camp));
             } catch (Exception ex) {
-                _logger.LogCritical($"Threw exception while getting camp with id='{id}' and includeSpeakers='{includeSpeakers}': {ex}");
+                _logger.LogCritical($"Threw exception while getting camp with moniker='{moniker}' and includeSpeakers='{includeSpeakers}': {ex}");
             }
 
             return BadRequest("Could not get camp");

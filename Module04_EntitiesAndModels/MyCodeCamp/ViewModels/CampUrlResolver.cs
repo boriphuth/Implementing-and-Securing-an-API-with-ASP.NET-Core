@@ -16,7 +16,7 @@ namespace MyCodeCamp.ViewModels
 
         public string Resolve(Camp source, CampViewModel destination, string destMember, ResolutionContext context) {
             var url = _httpContextAccessor.HttpContext.Items[BaseController.URLHELPER] as IUrlHelper;
-            return url.Link("GetCamp", new { id = source.Id });
+            return url.Link("GetCamp", new { moniker = source.Moniker });
         }
     }
 }
