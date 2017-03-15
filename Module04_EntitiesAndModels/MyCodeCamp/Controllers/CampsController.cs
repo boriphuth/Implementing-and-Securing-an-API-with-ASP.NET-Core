@@ -26,7 +26,7 @@ namespace MyCodeCamp.Controllers {
         public IActionResult Get() {
             try {
                 var camps = _campRepository.GetAllCamps();
-                return Ok(_mapper.Map<IEnumerable<CampViewModel>>(camps));
+                return Ok(_mapper.Map<IEnumerable<CampViewModel>>(camps, opt => opt.Items["UrlHelper"] = Url));
             } catch (Exception ex) {
                 _logger.LogCritical($"Threw exception while getting camps: {ex}");
             }
@@ -43,7 +43,7 @@ namespace MyCodeCamp.Controllers {
                 if (camp == null) {
                     return NotFound($"Camp with id '{id}' was not found.");
                 }
-                return Ok(_mapper.Map<CampViewModel>(camp));
+                return Ok(_mapper.Map<CampViewModel>(camp, opt => opt.Items["UrlHelper"] = Url));
             } catch (Exception ex) {
                 _logger.LogCritical($"Threw exception while getting camp with id='{id}' and includeSpeakers='{includeSpeakers}': {ex}");
             }
