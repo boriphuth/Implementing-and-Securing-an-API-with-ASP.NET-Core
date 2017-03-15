@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -36,6 +33,9 @@ namespace MyCodeCamp
             services.AddDbContext<CampContext>(ServiceLifetime.Scoped); /* init db context for the repos */
             services.AddScoped<ICampRepository, CampRepository>(); /* scope of a request +/- */
             services.AddTransient<CampDbInitializer>(); /* seed data if necessary */
+
+            // Automapper
+            services.AddAutoMapper();
 
             // Add framework services.
             services.AddMvc()
