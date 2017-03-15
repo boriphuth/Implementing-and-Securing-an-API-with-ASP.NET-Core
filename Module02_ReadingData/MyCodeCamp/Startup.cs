@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MyCodeCamp.Data;
+using Newtonsoft.Json;
 
 namespace MyCodeCamp
 {
@@ -37,7 +38,12 @@ namespace MyCodeCamp
             services.AddTransient<CampDbInitializer>(); /* seed data if necessary */
 
             // Add framework services.
-            services.AddMvc();            
+            services.AddMvc()
+                .AddJsonOptions(opt => {
+                    opt.SerializerSettings.ReferenceLoopHandling =
+                      ReferenceLoopHandling.Ignore;
+                });
+            ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,7 +55,7 @@ namespace MyCodeCamp
             loggerFactory.AddConsole(_configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseMvc();
+            app.UseMvc();                
 
             dbSeeder.Seed().Wait();
         }
