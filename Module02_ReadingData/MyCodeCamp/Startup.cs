@@ -40,7 +40,12 @@ namespace MyCodeCamp
             loggerFactory.AddConsole(_configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseMvc();
+            app.UseMvc(config => {
+                /*config.MapRoute(
+                    name: "default", 
+                    template: "api/{controller}/{action}"
+                );*/
+            });
         }
     }
 }
