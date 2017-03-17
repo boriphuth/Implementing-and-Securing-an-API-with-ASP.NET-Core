@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyCodeCamp.Data;
+using System;
 
 namespace MyCodeCamp.Controllers
 {
@@ -21,21 +22,33 @@ namespace MyCodeCamp.Controllers
 
         [HttpGet]
         public IActionResult Get(string moniker) {
-            var speakers = _campRepository.GetSpeakersByMoniker(moniker);
-            return Ok(speakers);
+            try {
+                var speakers = _campRepository.GetSpeakersByMoniker(moniker);
+                return Ok(speakers);
+            } catch(Exception ex) {
+                _logger.LogError($"Could nog get speaker: {ex}");
+            }
+
+            return BadRequest($"Could nog get speaker");
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(string moniker, int id)
         {
-            var speaker = _campRepository.GetSpeaker(id);
-            if(speaker == null) {
-                return NotFound();
+            try {
+                var speaker = _campRepository.GetSpeaker(id);
+                if(speaker == null) {
+                    return NotFound();
+                }
+                if(speaker.Camp.Moniker != moniker) {
+                    return BadRequest("Speaker not in specified camp!");
+                }
+                return Ok(speaker);
+            } catch(Exception ex) {
+                _logger.LogError($"Could nog get speaker: {ex}");
             }
-            if(speaker.Camp.Moniker != moniker) {
-                return BadRequest("Speaker not in specified camp!");
-            }
-            return Ok(speaker);
+
+            return BadRequest($"Could nog get speaker");
         }
     }
 }
