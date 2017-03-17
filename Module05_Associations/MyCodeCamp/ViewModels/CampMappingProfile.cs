@@ -7,6 +7,11 @@ namespace MyCodeCamp.ViewModels
     public class CampMappingProfile : Profile
     {
         public CampMappingProfile() {
+            CreateMap<Speaker, SpeakerViewModel>()
+                .ForMember(svm => svm.Url,
+                    opt => opt.ResolveUsing<SpeakerUrlResolver>())
+                .ReverseMap();
+
             CreateMap<Camp, CampViewModel>()
                 /*.ForMember(cvm => cvm.Url, 
                     opt => opt.ResolveUsing((camp, model, _, ctx) => {
