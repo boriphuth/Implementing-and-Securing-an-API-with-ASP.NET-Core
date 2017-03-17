@@ -29,7 +29,7 @@ namespace MyCodeCamp.Controllers
             try {
                 var speakers = _campRepository.GetSpeakersByMoniker(moniker);
                 return Ok(_mapper.Map<IEnumerable<SpeakerViewModel>>(speakers));
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 _logger.LogError($"Could nog get speaker: {ex}");
             }
 
@@ -40,14 +40,14 @@ namespace MyCodeCamp.Controllers
         public IActionResult Get(string moniker, int id) {
             try {
                 var speaker = _campRepository.GetSpeaker(id);
-                if(speaker == null) {
+                if (speaker == null) {
                     return NotFound();
                 }
-                if(speaker.Camp.Moniker != moniker) {
+                if (speaker.Camp.Moniker != moniker) {
                     return BadRequest("Speaker not in specified camp!");
                 }
                 return Ok(_mapper.Map<SpeakerViewModel>(speaker));
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 _logger.LogError($"Could nog get speaker: {ex}");
             }
 
@@ -58,7 +58,7 @@ namespace MyCodeCamp.Controllers
         public async Task<IActionResult> Post(string moniker, [FromBody] SpeakerViewModel viewModel) {
             try {
                 var camp = _campRepository.GetCampByMoniker(moniker);
-                if(camp == null) {
+                if (camp == null) {
                     return BadRequest("Could not get camp");
                 }
 
@@ -66,15 +66,40 @@ namespace MyCodeCamp.Controllers
                 speaker.Camp = camp;
                 _campRepository.Add(speaker);
 
-                if(await _campRepository.SaveAllAsync()) {
+                if (await _campRepository.SaveAllAsync()) {
                     var url = Url.Link("GetSpeaker", new { moniker = camp.Moniker, id = speaker.Id });
                     return Created(url, _mapper.Map<SpeakerViewModel>(speaker));
                 }
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 _logger.LogCritical($"Exception thrown while saving a speaker: {ex}.");
             }
 
             return BadRequest("Could not add new speaker.");
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string moniker, int id)
+        {
+            try {
+                var camp = _campRepository.GetCampByMoniker(moniker);
+                if (camp == null) {
+                    return BadRequest("Could not get camp");
+                }
+
+                var speaker = _campRepository.GetSpeaker(id);
+                speaker.Camp = null;
+                _campRepository.Delete(speaker);
+
+                if (await _campRepository.SaveAllAsync()) {
+                    return Ok();
+                } else {
+                    return BadRequest("Could not delete speaker");
+                }
+            } catch (Exception ex) {
+                _logger.LogCritical($"Exception thrown while deleting a speaker: {ex}.");
+            }
+
+            return BadRequest("Could not delete speaker.");
         }
     }
 }
